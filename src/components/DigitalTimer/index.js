@@ -9,15 +9,16 @@ class DigitalTimer extends Component {
     consistentRun: 25 * 60,
   }
 
-  onClickPlay = () => {
-    const {consistentRun} = this.state
+  componentWillUnmount() {
+    clearInterval(this.timerId)
+  }
 
+  onClickPlay = () => {
     this.setState(preState => ({
       initialState: !preState.initialState,
     }))
-    if (consistentRun > 1) {
-      this.timerId = setInterval(this.onDing, 1000)
-    }
+
+    this.timerId = setInterval(this.onDing, 1000)
   }
 
   onDing = () => {
@@ -25,7 +26,7 @@ class DigitalTimer extends Component {
     this.setState(preState => ({
       consistentRun: preState.consistentRun - 1,
     }))
-    if (consistentRun === 1) {
+    if (consistentRun < 1) {
       clearInterval(this.timerId)
       this.setState({
         initialState: false,
@@ -76,20 +77,16 @@ class DigitalTimer extends Component {
   }
 
   getInStrFormat = () => {
-    const {consistentRun, timerRun} = this.state
-    let result
-    if (consistentRun === timerRun) {
-      result =
-        consistentRun < 10 ? `0${consistentRun}:00` : `${consistentRun}:00`
-    } else {
-      const timeValue = consistentRun
-      const mins = Math.floor(timeValue / 60)
-      const secs = Math.floor(timeValue % 60)
-      const minute = mins < 10 ? `0${mins}` : mins
-      let seconds = secs === 0 && '00'
-      seconds = secs < 10 ? `0${secs}` : secs
-      result = `${minute}:${seconds}`
-    }
+    const {consistentRun} = this.state
+
+    const timeValue = consistentRun
+    const mins = Math.floor(timeValue / 60)
+    const secs = Math.floor(timeValue % 60)
+    const minute = mins < 10 ? `0${mins}` : mins
+    let seconds = secs === 0 && '00'
+    seconds = secs < 10 ? `0${secs}` : secs
+    const result = `${minute}:${seconds}`
+
     return result
   }
 
